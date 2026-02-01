@@ -45,15 +45,37 @@ export default function TopTrailer({ mediaType }: TopTrailerProps) {
     playerRef.current = player;
   }, []);
 
+  const videoJsOptions = useMemo(() => {
+    if (!detail) return null;
+    return {
+      loop: true,
+      muted: true,
+      autoplay: true,
+      controls: false,
+      responsive: true,
+      fluid: true,
+      techOrder: ["youtube"],
+      sources: [
+        {
+          type: "video/youtube",
+          src: `https://www.youtube.com/watch?v=${detail.videos.results[0]?.key || "L3oOldViIgY"}`,
+        },
+      ],
+    };
+  }, [detail]);
+
   useEffect(() => {
-    if (playerRef.current) {
-      if (isOffset) {
-        playerRef.current.pause();
-      } else {
-        if (playerRef.current.paused()) {
-          playerRef.current.play();
+    const player = playerRef.current as any;
+    if (player) {
+      player.ready?.(() => {
+        if (isOffset) {
+          player.pause?.();
+        } else {
+          if (player.paused?.()) {
+            player.play?.().catch(() => { });
+          }
         }
-      }
+      });
     }
   }, [isOffset]);
 
@@ -62,15 +84,13 @@ export default function TopTrailer({ mediaType }: TopTrailerProps) {
       const videos = data.results.filter((item) => !!item.backdrop_path);
       setVideo(videos[getRandomNumber(videos.length)]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   useEffect(() => {
     if (video) {
       getVideoDetail({ mediaType, id: video.id });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [video]);
+  }, [video, getVideoDetail, mediaType]);
 
   const handleMute = useCallback((status: boolean) => {
     if (playerRef.current) {
@@ -109,24 +129,9 @@ export default function TopTrailer({ mediaType }: TopTrailerProps) {
                   position: "absolute",
                 }}
               >
-                {detail && (
+                {detail && videoJsOptions && (
                   <VideoJSPlayer
-                    options={{
-                      loop: true,
-                      muted: true,
-                      autoplay: true,
-                      controls: false,
-                      responsive: true,
-                      fluid: true,
-                      techOrder: ["youtube"],
-                      sources: [
-                        {
-                          type: "video/youtube",
-                          src: `https://www.youtube.com/watch?v=${detail.videos.results[0]?.key || "L3oOldViIgY"
-                            }`,
-                        },
-                      ],
-                    }}
+                    options={videoJsOptions}
                     onReady={handleReady}
                   />
                 )}

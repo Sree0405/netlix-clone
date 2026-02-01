@@ -15,73 +15,58 @@ export default function VideoJSPlayer({
   const playerRef = useRef<Player | null>(null);
 
   useEffect(() => {
-    (async function handleVideojs() {
-      // Make sure Video.js player is only initialized once
-      if (!playerRef.current) {
-        // The Video.js player needs to be _inside_ the component el for React 18 Strict Mode.
-        const videoElement = document.createElement("video-js");
-        // videoElement.classList.add("vjs-big-play-centered", "vjs-16-9");
+    // Make sure Video.js player is only initialized once
+    if (!playerRef.current) {
+      if (!videoRef.current) return;
 
-        videoRef.current?.appendChild(videoElement);
-        const player = (playerRef.current = videojs(
-          videoElement,
-          options,
-          () => {
-            onReady && onReady(player);
-          }
-        ));
+      const videoElement = document.createElement("video-js");
+      videoElement.classList.add("vjs-big-play-centered");
+      videoRef.current.appendChild(videoElement);
 
-        // import("video.js").then(async ({ default: videojs }) => {
-        //   await import("video.js/dist/video-js.css");
-        //   if (options["techOrder"] && options["techOrder"].includes("youtube")) {
-        //     // eslint-disable-next-line
-        //     await import("videojs-youtube");
-        //   }
-        //   const player = (playerRef.current = videojs(
-        //     videoElement,
-        //     options,
-        //     () => {
-        //       onReady && onReady(player);
-        //     }
-        //   ));
-        // });
+      const playerOptions = {
+        techOrder: ["html5", "youtube"],
+        ...options,
+      };
 
-        // await import("video.js/dist/video-js.css");
-        // const videojs = await import("video.js");
-        // if (options["techOrder"] && options["techOrder"].includes("youtube")) {
-        //   // eslint-disable-next-line
-        //   await import("videojs-youtube");
-        // }
-        // const player = (playerRef.current = videojs.default(
-        //   videoElement,
-        //   options,
-        //   () => {
-        //     onReady && onReady(player);
-        //   }
-        // ));
+      const player = (playerRef.current = videojs(videoElement, playerOptions, () => {
+        player.ready(() => {
+          onReady && onReady(player);
+        });
+      }));
+    } else {
+      const player = playerRef.current as any;
 
-        // You could update an existing player in the `else` block here
-        // on prop change, for example:
-      } else {
-        const player = playerRef.current;
-        // player.autoplay(options.autoplay);
-        player.width(options.width);
-        player.height(options.height);
+      // Update existing player source if it changed
+      const currentSrc = player.currentSrc?.() || player.src?.();
+      const newSrc = options.sources?.[0]?.src;
+
+      if (newSrc && currentSrc !== newSrc) {
+        player.src(options.sources);
       }
-    })();
-  }, [options, videoRef]);
+
+      if (options.autoplay) {
+        player.ready?.(() => {
+          player.play?.().catch(() => {
+            // Autoplay might be blocked by browser
+            console.log("Autoplay blocked");
+          });
+        });
+      }
+
+      player.width?.(options.width);
+      player.height?.(options.height);
+    }
+  }, [options, onReady]);
 
   // Dispose the Video.js player when the functional component unmounts
   useEffect(() => {
-    const player = playerRef.current;
-
     return () => {
-      if (player && !player.isDisposed()) {
-        player.dispose();
+      if (playerRef.current && !playerRef.current.isDisposed()) {
+        playerRef.current.dispose();
         playerRef.current = null;
       }
     };
-  }, [playerRef]);
+  }, []);
 
   return (
     <div data-vjs-player>

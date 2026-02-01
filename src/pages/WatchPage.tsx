@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Player from "video.js/dist/types/player";
 import { Box, Stack, Typography } from "@mui/material";
@@ -54,7 +54,7 @@ export function Component() {
       controls: false,
       width: windowSize.width,
       height: windowSize.height,
-      techOrder: youtubeKey ? ["youtube"] : undefined,
+      techOrder: ["html5", "youtube"],
       sources: [
         {
           src: youtubeKey
@@ -67,46 +67,43 @@ export function Component() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowSize, videoData]);
 
-  const handlePlayerReady = function (player: Player): void {
-    player.on("pause", () => {
-      setPlayerState((draft) => {
-        return { ...draft, paused: true };
+  const handlePlayerReady = useCallback((player: Player): void => {
+    player.ready(() => {
+      player.on("pause", () => {
+        setPlayerState((draft) => ({ ...draft, paused: true }));
       });
-    });
 
-    player.on("play", () => {
-      setPlayerState((draft) => {
-        return { ...draft, paused: false };
+      player.on("play", () => {
+        setPlayerState((draft) => ({ ...draft, paused: false }));
       });
-    });
 
-    player.on("timeupdate", () => {
-      setPlayerState((draft) => {
-        return { ...draft, playedSeconds: player.currentTime() };
+      player.on("timeupdate", () => {
+        setPlayerState((draft) => ({ ...draft, playedSeconds: player.currentTime() }));
       });
-    });
 
-    player.one("durationchange", () => {
-      setPlayerInitialized(true);
-      setPlayerState((draft) => ({ ...draft, duration: player.duration() }));
-    });
+      player.one("durationchange", () => {
+        setPlayerInitialized(true);
+        setPlayerState((draft) => ({ ...draft, duration: player.duration() }));
+      });
 
-    playerRef.current = player;
-
-    setPlayerState((draft) => {
-      return { ...draft, paused: player.paused() };
+      playerRef.current = player;
+      setPlayerState((draft) => ({ ...draft, paused: player.paused() }));
     });
-  };
+  }, []);
 
   const handleVolumeChange: SliderUnstyledOwnProps["onChange"] = (_, value) => {
-    playerRef.current?.volume((value as number) / 100);
-    setPlayerState((draft) => {
-      return { ...draft, volume: (value as number) / 100 };
-    });
+    const player = playerRef.current as any;
+    if (player?.volume) {
+      player.volume((value as number) / 100);
+    }
+    setPlayerState((draft) => ({ ...draft, volume: (value as number) / 100 }));
   };
 
   const handleSeekTo = (v: number) => {
-    playerRef.current?.currentTime(v);
+    const player = playerRef.current as any;
+    if (player?.currentTime) {
+      player.currentTime(v);
+    }
   };
 
   const handleGoBack = () => {

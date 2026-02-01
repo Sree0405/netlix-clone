@@ -9,6 +9,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Player from "video.js/dist/types/player";
 import { Movie } from "src/types/Movie";
 import { usePortal } from "src/providers/PortalProvider";
 import { useDetailModal } from "src/providers/DetailModalProvider";
@@ -27,6 +28,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "src/store";
 import { addToMyList, removeFromMyList } from "src/store/slices/myList";
 import CheckIcon from "@mui/icons-material/Check";
+import { useMemo, useState, useRef, useCallback, useEffect } from "react";
+import { useGetAppendedVideosQuery } from "src/store/slices/discover";
+import VideoJSPlayer from "./watch/VideoJSPlayer";
 
 interface VideoCardModalProps {
   video: Movie;
@@ -47,6 +51,46 @@ export default function VideoCardModal({
   const setPortal = usePortal();
   const rect = anchorElement.getBoundingClientRect();
   const { setDetailType } = useDetailModal();
+  const [showVideo, setShowVideo] = useState(false);
+  const videoTimerRef = useRef<any>(null);
+
+  const { data: detail } = useGetAppendedVideosQuery({
+    mediaType: video.media_type || MEDIA_TYPE.Movie,
+    id: video.id,
+  });
+
+  const handleReady = useCallback((player: Player) => {
+    // Sync with muted/unmuted if needed
+  }, []);
+
+  useEffect(() => {
+    videoTimerRef.current = setTimeout(() => {
+      setShowVideo(true);
+    }, 800);
+
+    return () => {
+      if (videoTimerRef.current) clearTimeout(videoTimerRef.current);
+    };
+  }, []);
+
+  const videoJsOptions = useMemo(() => {
+    if (!detail?.videos?.results?.[0]) return null;
+    return {
+      autoplay: true,
+      muted: true,
+      loop: true,
+      controls: false,
+      responsive: true,
+      fluid: true,
+      techOrder: ["youtube"],
+      sources: [
+        {
+          type: "video/youtube",
+          src: `https://www.youtube.com/watch?v=${detail.videos.results[0].key}`,
+        },
+      ],
+    };
+  }, [detail]);
 
   const handleMyListToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -80,16 +124,22 @@ export default function VideoCardModal({
           paddingTop: "calc(9 / 16 * 100%)",
         }}
       >
-        <img
-          src={video.backdrop_path ? `${configuration?.images.base_url}w780${video.backdrop_path}` : "/assets/placeholder.jpg"}
-          style={{
-            top: 0,
-            height: "100%",
-            width: "100%",
-            objectFit: "cover",
-            position: "absolute",
-          }}
-        />
+        {!showVideo || !videoJsOptions ? (
+          <img
+            src={video.backdrop_path ? `${configuration?.images.base_url}w780${video.backdrop_path}` : "/assets/placeholder.jpg"}
+            style={{
+              top: 0,
+              height: "100%",
+              width: "100%",
+              objectFit: "cover",
+              position: "absolute",
+            }}
+          />
+        ) : (
+          <Box sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+            <VideoJSPlayer options={videoJsOptions} onReady={handleReady} />
+          </Box>
+        )}
         <Box
           sx={{
             display: "flex",
@@ -102,6 +152,7 @@ export default function VideoCardModal({
             pb: 1,
             position: "absolute",
             background: "linear-gradient(to top, rgba(24,24,24,1), transparent)",
+            zIndex: 1,
           }}
         >
           <MaxLineTypography

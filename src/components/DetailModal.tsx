@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useRef, useState } from "react";
+import { forwardRef, useCallback, useRef, useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
@@ -51,6 +51,24 @@ export default function DetailModal() {
     setMuted(player.muted());
   }, []);
 
+  const videoJsOptions = useMemo(() => {
+    if (!detail.mediaDetail) return null;
+    return {
+      loop: true,
+      autoplay: true,
+      controls: false,
+      responsive: true,
+      fluid: true,
+      techOrder: ["youtube"],
+      sources: [
+        {
+          type: "video/youtube",
+          src: `https://www.youtube.com/watch?v=${detail.mediaDetail?.videos.results[0]?.key || "L3oOldViIgY"}`,
+        },
+      ],
+    };
+  }, [detail.mediaDetail]);
+
   const handleMute = useCallback((status: boolean) => {
     if (playerRef.current) {
       playerRef.current.muted(!status);
@@ -85,26 +103,12 @@ export default function DetailModal() {
                 height: "calc(9 / 16 * 100%)",
               }}
             >
-              <VideoJSPlayer
-                options={{
-                  loop: true,
-                  autoplay: true,
-                  controls: false,
-                  responsive: true,
-                  fluid: true,
-                  techOrder: ["youtube"],
-                  sources: [
-                    {
-                      type: "video/youtube",
-                      src: `https://www.youtube.com/watch?v=${
-                        detail.mediaDetail?.videos.results[0]?.key ||
-                        "L3oOldViIgY"
-                      }`,
-                    },
-                  ],
-                }}
-                onReady={handleReady}
-              />
+              {videoJsOptions && (
+                <VideoJSPlayer
+                  options={videoJsOptions}
+                  onReady={handleReady}
+                />
+              )}
 
               <Box
                 sx={{
