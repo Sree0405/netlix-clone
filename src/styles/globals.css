@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap');
+
+:root {
+    --netflix-red: #e50914;
+    --netflix-black: #141414;
+    --netflix-dark-gray: #181818;
+    --netflix-light-gray: #e5e5e5;
+    --netflix-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--netflix-black);
+    color: var(--netflix-light-gray);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--netflix-black);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Netflix Style Buttons */
+.netflix-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--netflix-transition);
+    border: none;
+    font-size: 1.1rem;
+}
+
+.netflix-button-primary {
+    background-color: white;
+    color: black;
+}
+
+.netflix-button-primary:hover {
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+.netflix-button-secondary {
+    background-color: rgba(109, 109, 110, 0.7);
+    color: white;
+}
+
+.netflix-button-secondary:hover {
+    background-color: rgba(109, 109, 110, 0.4);
+}
+
+/* Row Styling */
+.netflix-row {
+    margin-left: 20px;
+    margin-bottom: 2rem;
+}
+
+.netflix-row-title {
+    font-size: 1.4rem;
+    color: #e5e5e5;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    transition: color 0.1s;
+}
+
+/* Skeleton Loader */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* Glassmorphism */
+.glass {
+    background: rgba(20, 20, 20, 0.7) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* Image Hover effects */
+.hover-scale {
+    transition: transform 0.3s ease-out !important;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
