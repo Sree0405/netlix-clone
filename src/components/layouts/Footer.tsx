@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
+import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
+import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 
 export default function Footer() {
@@ -10,135 +10,164 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        position: "relative",
-        bgcolor: "#0b0b0b",
+        bgcolor: "#050505",
         color: "grey.400",
-        px: { xs: 3, md: 10 },
-        py: 8,
+        px: { xs: 3, md: 12 },
+        py: 10,
+        position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* subtle red glow */}
+      {/* ambient cinematic gradient */}
       <Box
         sx={{
           position: "absolute",
-          top: -120,
-          right: -120,
-          width: 300,
-          height: 300,
+          inset: 0,
           background:
-            "radial-gradient(circle, rgba(229,9,20,0.25), transparent 70%)",
+            "linear-gradient(180deg, rgba(229,9,20,0.08), transparent 40%)",
           pointerEvents: "none",
         }}
       />
 
-      <Divider sx={{ mb: 6, borderColor: "grey.800" }} />
-
       <Stack
-        direction={{ xs: "column", md: "row" }}
-        spacing={8}
+        direction={{ xs: "column", lg: "row" }}
+        spacing={10}
         justifyContent="space-between"
+        position="relative"
+        zIndex={1}
       >
-        {/* ABOUT YOU */}
-        <Box maxWidth={480}>
+        {/* CREATOR BLOCK */}
+        <Box maxWidth={520}>
           <Typography
-            variant="h5"
-            sx={{ color: "grey.100", fontWeight: 600, mb: 2 }}
+            variant="overline"
+            sx={{
+              color: "#e50914",
+              letterSpacing: 2,
+              mb: 1,
+              display: "block",
+            }}
           >
-            Sreekanth — Full-Stack Developer
+            CREATED BY
           </Typography>
 
-          <Typography variant="body2" lineHeight={1.8}>
-            I build modern, scalable web applications with a strong focus on
-            performance, clean architecture, and polished user experience.
-            Passionate about React ecosystems, backend systems, automation, and
-            real-world product engineering.
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 700,
+              color: "grey.100",
+              mb: 2,
+            }}
+          >
+            Sreekanth
           </Typography>
 
-          <Stack direction="row" spacing={1} mt={3} flexWrap="wrap">
+          <Typography
+            variant="body2"
+            sx={{
+              lineHeight: 1.9,
+              maxWidth: 480,
+            }}
+          >
+            Full-stack developer focused on crafting scalable, high-performance
+            web experiences. Passionate about React ecosystems, clean
+            architecture, and building production-ready products that feel
+            polished, fast, and intuitive.
+          </Typography>
+
+          <Stack direction="row" spacing={1} mt={4} flexWrap="wrap">
             {[
               "React",
               "TypeScript",
-              "VITE",
-              "Backend APIs",
+              "Vite",
               "Material UI",
-            ].map((skill) => (
+              "API Architecture",
+              "Frontend Engineering",
+            ].map((tech) => (
               <Chip
-                key={skill}
-                label={skill}
+                key={tech}
+                label={tech}
                 size="small"
                 sx={{
-                  bgcolor: "rgba(255,255,255,0.05)",
+                  bgcolor: "rgba(255,255,255,0.06)",
                   color: "grey.300",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  fontSize: 12,
                 }}
               />
             ))}
           </Stack>
         </Box>
 
-        {/* LINKS */}
-        <Box minWidth={220}>
+        {/* ACTION LINKS */}
+        <Box>
           <Typography
-            variant="h6"
-            sx={{ color: "grey.100", fontWeight: 500, mb: 2 }}
+            variant="overline"
+            sx={{
+              color: "grey.500",
+              letterSpacing: 2,
+              mb: 3,
+              display: "block",
+            }}
           >
-            Connect with me
+            EXPLORE MORE
           </Typography>
 
-          <Stack spacing={2}>
+          <Stack spacing={3}>
             {[
               {
-                label: "Portfolio",
+                label: "View Portfolio",
                 url: "https://sreefolio.vercel.app/",
+                accent: true,
               },
               {
-                label: "GitHub",
-                url: "https://github.com/crazy-man22",
+                label: "GitHub Projects",
+                url: "https://github.com/Sree0405",
               },
               {
-                label: "LinkedIn",
-                url: "https://www.linkedin.com",
+                label: "LinkedIn Profile",
+                url: "https://in.linkedin.com/in/sreekanth04052005",
               },
-            ].map((link) => (
+            ].map((item) => (
               <Link
-                key={link.label}
-                href={link.url}
+                key={item.label}
+                href={item.url}
                 target="_blank"
                 underline="none"
                 sx={{
-                  color: "grey.400",
-                  fontSize: 15,
-                  position: "relative",
+                  fontSize: 16,
+                  fontWeight: item.accent ? 600 : 400,
+                  color: item.accent ? "#e50914" : "grey.300",
                   width: "fit-content",
-                  transition: "color 0.3s ease",
+                  position: "relative",
+                  transition: "transform 0.25s ease, color 0.25s ease",
                   "&::after": {
                     content: '""',
                     position: "absolute",
                     left: 0,
-                    bottom: -3,
+                    bottom: -4,
                     width: "0%",
                     height: 2,
-                    bgcolor: "#e50914",
+                    bgcolor: item.accent ? "#e50914" : "grey.500",
                     transition: "width 0.3s ease",
                   },
                   "&:hover": {
-                    color: "grey.100",
+                    transform: "translateX(6px)",
+                    color: "#fff",
                   },
                   "&:hover::after": {
                     width: "100%",
                   },
                 }}
               >
-                {link.label}
+                → {item.label}
               </Link>
             ))}
           </Stack>
         </Box>
       </Stack>
 
-      {/* FOOTER BOTTOM */}
-      <Divider sx={{ my: 6, borderColor: "grey.800" }} />
+      {/* BOTTOM */}
+      <Divider sx={{ my: 8, borderColor: "grey.800" }} />
 
       <Typography
         variant="caption"
@@ -146,11 +175,11 @@ export default function Footer() {
           display: "block",
           textAlign: "center",
           color: "grey.600",
-          letterSpacing: 0.4,
+          letterSpacing: 0.5,
         }}
       >
-        © {new Date().getFullYear()} Sreekanth • Built with React • Designed for
-        performance & scalability
+        © {new Date().getFullYear()} Sreekanth · Netflix-inspired UI · Built for
+        performance & real-world scale
       </Typography>
     </Box>
   );
