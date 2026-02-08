@@ -1,7 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/((?!manifest\\.json|favicon\\.ico|logo192\\.png|logo512\\.png|assets).*)",
       "destination": "/"
     }
   ]
