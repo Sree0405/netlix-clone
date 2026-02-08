@@ -16,6 +16,6 @@
         ]
     },
     "include": [
-        "tmdb.ts"
+        "tmdb/[...slug].ts"
     ]
 }
